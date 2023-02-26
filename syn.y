@@ -18,7 +18,7 @@
 };
 %type<tree> line paren parnl brace body assign epilog redir
 %type<tree> cmd cmdexpr simple compound
-%type<tree> first kword kword_t word_t comword keyword word words
+%type<tree> first kword kword_t word_t comword keyword word words wordsnl
 %type<tree> NOT FOR IN WHILE IF TWIDDLE BANG SUBSHELL SWITCH FN
 %type<tree> WORD REDIR DUP PIPE
 %%
@@ -31,7 +31,6 @@ line:	cmdexpr
 	 * there are some special cases (including { & } which we ignore).
 	 */
 |	line '&' cmdexpr	{$$=!(struct tree *)$1?$3:($1->type!=';'?tree2(';', tree1('&', $1), $3):tree2(';', mung2($1,$1->child[1],tree1('&',$1->child[2])), $3) );}
-|				{$$=(struct tree *)0;}
 body:	line			{$$=reassoc($1);}
 |	body '\n' line		{$$=tree2(';', $1, reassoc($3));}
 brace:	'{' body '}'		{$$=tree1(BRACE, reassoc($2));}
@@ -41,7 +40,8 @@ epilog:				{$$=0;}
 redir:	REDIR word		{$$=mung1($1, $1->rtype==HERE?heredoc($2):$2);}
 |	DUP
 parnl:	paren {skipnl();}	{$$=$1;}
-cmdexpr: cmd
+cmdexpr:			{$$=(struct tree *)0;}
+|	cmd
 |	cmdexpr ANDAND cmd	{$$=tree2(ANDAND, $1, $3);}
 |	cmdexpr OROR cmd	{$$=tree2(OROR, $1, $3);}
 |	cmdexpr PIPE cmd	{$$=mung2($2, $1, $3);}
@@ -94,18 +94,21 @@ word_t:	kword_t
 	/* word = word_t strung together by carats */
 word:	word_t
 |	word '^' word_t		{$$=tree2('^', $1, $3);}
+wordsnl:			{$$=(struct tree*)0;}
+|	wordsnl word		{$$=tree2(WORDS, $1, $2);}
+|	wordsnl '\n'		{$$=$1;}
 words:				{$$=(struct tree*)0;}
 |	words word		{$$=tree2(WORDS, $1, $2);}
 	/* kword_t can be any first word, keyword, or list of words */
 kword_t:first
-|       keyword		{lastword=1; $1->type=WORD;}
-|	'(' words ')'		{$$=tree1(PAREN, $2);}
+|       keyword			{lastword=1; $1->type=WORD;}
+|	'(' wordsnl ')'		{$$=tree1(PAREN, $2);}
 	/* kword = kword_t strung together by carats */
 kword:	kword_t
 |	kword '^' kword_t	{$$=tree2('^', $1, $3);}
 	/* words that get interpreted */
 comword: '$' kword		{$$=tree1('$', $2);}
-|	'$' kword SUB words ')'	{$$=tree2(SUB, $2, $4);}
+|	'$' kword SUB wordsnl ')'	{$$=tree2(SUB, $2, $4);}
 |	'"' kword		{$$=tree1('"', $2);}
 |	COUNT kword		{$$=tree1(COUNT, $2);}
 |	'`' brace		{$$=tree1('`', $2);}
