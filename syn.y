@@ -80,6 +80,7 @@ compound: first kword		{$$=tree2(ARGLIST, $1, $2);}
 |         compound word         {$$=tree2(ARGLIST, $1, $2);}
 |	  compound redir	{$$=tree2(ARGLIST, $1, $2);}
 assign:	first '=' kword		{$$=tree2('=', $1, $3);}
+|	first '^' '=' kword	{$$=tree2('=', $1, $4);}
 	/* first words are the most restricted word class */
 first:	comword
 |  	WORD

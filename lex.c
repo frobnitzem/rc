@@ -185,8 +185,7 @@ yylex(void)
 			strcpy(tok, "( [SUB]");
 			return SUB;
 		}
-		//if(wordchr(d) || d == '=' || d=='\'' || d=='`' || d=='$' || d=='"'){
-		if(wordchr(d) || d=='\'' || d=='`' || d=='$' || d=='"'){
+		if(wordchr(d) || d == '=' || d=='\'' || d=='`' || d=='$' || d=='"'){
 			strcpy(tok, "^");
 			return '^';
 		}
