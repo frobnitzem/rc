@@ -87,6 +87,12 @@ mung3(tree *t, tree *c0, tree *c1, tree *c2)
 	return t;
 }
 
+/*
+ * Return epi, with epi->child[n] (->child[n])* = comp
+ * If epi->child[n] is occupied, search recursively
+ * until an empty child[n] is found.
+ * If epi is null, return comp.
+ */
 tree*
 epimung(tree *comp, tree *epi, int n)
 {
@@ -97,11 +103,33 @@ epimung(tree *comp, tree *epi, int n)
 	p->child[n] = comp;
 	return epi;
 }
+
+/* Re-arrange left-associative, nested tree2(';', ...) expressions to be
+ * right-associative.
+ *
+ * e.g. tree2(';', tree2(...a, X), Y)
+ *      ~> tree2(';', A, tree2(B, ...))
+ * Using successive tree rotations along the left path.
+ */
+tree*
+reassoc(tree *a)
+{
+	tree *next;
+    if( !(a != 0 && a->type == ';'))
+        return a;
+    while(a->child[0] != 0 && a->child[0]->type == ';') {
+        next = a->child[0];
+        a->child[0] = next->child[1];
+        next->child[1] = a;
+        a = next;
+    }
+	return a;
+}
+
 /*
  * Add a SIMPLE node at the root of t and percolate all the redirections
  * up to the root.
  */
-
 tree*
 simplemung(tree *t)
 {

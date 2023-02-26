@@ -480,14 +480,14 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    25,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,    44,    44,    46,    46,    47,    47,    57,    57,    59,
-      59,    61,    62,    63,    64,    65,    66,    66,    68,    69,
-      70,    71,    72,    73,    74,    75,    76,    77,    78,    80,
-      81,    84,    85,    87,    88,    89,    90,    92,    93,    94,
-      96,    97,    99,   100,   101,   102,   103,   104,   105,   105,
-     105,   105,   105,   105,   105,   105,   105,   105
+       0,    25,    25,    26,    27,    28,    33,    34,    35,    36,
+      37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+      47,    48,    48,    50,    50,    51,    51,    61,    61,    63,
+      63,    65,    66,    67,    68,    69,    70,    70,    72,    73,
+      74,    75,    76,    77,    78,    79,    80,    81,    82,    84,
+      85,    88,    89,    91,    92,    93,    94,    96,    97,    98,
+     100,   101,   103,   104,   105,   106,   107,   108,   109,   109,
+     109,   109,   109,   109,   109,   109,   109,   109
 };
 #endif
 
@@ -1536,7 +1536,7 @@ yyreduce:
 
   case 3:
 #line 26 "syn.y"
-    {return !compile((yyvsp[(1) - (2)].tree));}
+    {return !compile(reassoc((yyvsp[(1) - (2)].tree)));}
     break;
 
   case 5:
@@ -1545,263 +1545,268 @@ yyreduce:
     break;
 
   case 6:
-#line 29 "syn.y"
-    {(yyval.tree)=tree2(';', tree1('&', (yyvsp[(1) - (3)].tree)), (yyvsp[(3) - (3)].tree));}
+#line 33 "syn.y"
+    {(yyval.tree)=!(struct tree *)(yyvsp[(1) - (3)].tree)?(yyvsp[(3) - (3)].tree):((yyvsp[(1) - (3)].tree)->type!=';'?tree2(';', tree1('&', (yyvsp[(1) - (3)].tree)), (yyvsp[(3) - (3)].tree)):tree2(';', mung2((yyvsp[(1) - (3)].tree),(yyvsp[(1) - (3)].tree)->child[1],tree1('&',(yyvsp[(1) - (3)].tree)->child[2])), (yyvsp[(3) - (3)].tree)) );}
     break;
 
   case 7:
-#line 30 "syn.y"
+#line 34 "syn.y"
     {(yyval.tree)=(struct tree *)0;}
     break;
 
+  case 8:
+#line 35 "syn.y"
+    {(yyval.tree)=reassoc((yyvsp[(1) - (1)].tree));}
+    break;
+
   case 9:
-#line 32 "syn.y"
-    {(yyval.tree)=tree2(';', (yyvsp[(1) - (3)].tree), (yyvsp[(3) - (3)].tree));}
+#line 36 "syn.y"
+    {(yyval.tree)=tree2(';', (yyvsp[(1) - (3)].tree), reassoc((yyvsp[(3) - (3)].tree)));}
     break;
 
   case 10:
-#line 33 "syn.y"
-    {(yyval.tree)=tree1(BRACE, (yyvsp[(2) - (3)].tree));}
+#line 37 "syn.y"
+    {(yyval.tree)=tree1(BRACE, reassoc((yyvsp[(2) - (3)].tree)));}
     break;
 
   case 11:
-#line 34 "syn.y"
-    {(yyval.tree)=tree1(PCMD, (yyvsp[(2) - (3)].tree));}
+#line 38 "syn.y"
+    {(yyval.tree)=tree1(PCMD, reassoc((yyvsp[(2) - (3)].tree)));}
     break;
 
   case 12:
-#line 35 "syn.y"
+#line 39 "syn.y"
     {(yyval.tree)=0;}
     break;
 
   case 13:
-#line 36 "syn.y"
+#line 40 "syn.y"
     {(yyval.tree)=mung2((yyvsp[(1) - (2)].tree), (yyvsp[(1) - (2)].tree)->child[0], (yyvsp[(2) - (2)].tree));}
     break;
 
   case 14:
-#line 37 "syn.y"
+#line 41 "syn.y"
     {(yyval.tree)=mung1((yyvsp[(1) - (2)].tree), (yyvsp[(1) - (2)].tree)->rtype==HERE?heredoc((yyvsp[(2) - (2)].tree)):(yyvsp[(2) - (2)].tree));}
     break;
 
   case 17:
-#line 40 "syn.y"
+#line 44 "syn.y"
     {(yyval.tree)=tree2(ANDAND, (yyvsp[(1) - (3)].tree), (yyvsp[(3) - (3)].tree));}
     break;
 
   case 18:
-#line 41 "syn.y"
+#line 45 "syn.y"
     {(yyval.tree)=tree2(OROR, (yyvsp[(1) - (3)].tree), (yyvsp[(3) - (3)].tree));}
     break;
 
   case 19:
-#line 42 "syn.y"
+#line 46 "syn.y"
     {(yyval.tree)=mung2((yyvsp[(2) - (3)].tree), (yyvsp[(1) - (3)].tree), (yyvsp[(3) - (3)].tree));}
     break;
 
   case 20:
-#line 43 "syn.y"
+#line 47 "syn.y"
     {(yyval.tree)=simplemung((yyvsp[(1) - (1)].tree));}
     break;
 
   case 21:
-#line 44 "syn.y"
+#line 48 "syn.y"
     {skipnl();}
     break;
 
   case 22:
-#line 45 "syn.y"
+#line 49 "syn.y"
     {(yyval.tree)=mung2((yyvsp[(1) - (4)].tree), (yyvsp[(2) - (4)].tree), (yyvsp[(4) - (4)].tree));}
     break;
 
   case 23:
-#line 46 "syn.y"
+#line 50 "syn.y"
     {skipnl();}
     break;
 
   case 24:
-#line 46 "syn.y"
+#line 50 "syn.y"
     {(yyval.tree)=mung1((yyvsp[(2) - (4)].tree), (yyvsp[(4) - (4)].tree));}
     break;
 
   case 25:
-#line 47 "syn.y"
+#line 51 "syn.y"
     {skipnl();}
     break;
 
   case 26:
-#line 56 "syn.y"
+#line 60 "syn.y"
     {(yyval.tree)=mung3((yyvsp[(1) - (8)].tree), (yyvsp[(3) - (8)].tree), (yyvsp[(5) - (8)].tree) ? (yyvsp[(5) - (8)].tree) : tree1(PAREN, (yyvsp[(5) - (8)].tree)), (yyvsp[(8) - (8)].tree));}
     break;
 
   case 27:
-#line 57 "syn.y"
+#line 61 "syn.y"
     {skipnl();}
     break;
 
   case 28:
-#line 58 "syn.y"
+#line 62 "syn.y"
     {(yyval.tree)=mung3((yyvsp[(1) - (6)].tree), (yyvsp[(3) - (6)].tree), (struct tree *)0, (yyvsp[(6) - (6)].tree));}
     break;
 
   case 29:
-#line 59 "syn.y"
+#line 63 "syn.y"
     {skipnl();}
     break;
 
   case 30:
-#line 60 "syn.y"
+#line 64 "syn.y"
     {(yyval.tree)=mung2((yyvsp[(1) - (4)].tree), (yyvsp[(2) - (4)].tree), (yyvsp[(4) - (4)].tree));}
     break;
 
   case 31:
-#line 61 "syn.y"
+#line 65 "syn.y"
     {(yyval.tree)=mung1((yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree));}
     break;
 
   case 32:
-#line 62 "syn.y"
+#line 66 "syn.y"
     {(yyval.tree)=mung1((yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree));}
     break;
 
   case 33:
-#line 63 "syn.y"
+#line 67 "syn.y"
     {(yyval.tree)=mung2((yyvsp[(1) - (2)].tree), (yyvsp[(1) - (2)].tree)->child[0], (yyvsp[(2) - (2)].tree));}
     break;
 
   case 34:
-#line 64 "syn.y"
+#line 68 "syn.y"
     {(yyval.tree)=mung3((yyvsp[(1) - (1)].tree), (yyvsp[(1) - (1)].tree)->child[0], (yyvsp[(1) - (1)].tree)->child[1], (struct tree *)0);}
     break;
 
   case 35:
-#line 65 "syn.y"
+#line 69 "syn.y"
     {(yyval.tree)=mung3((yyvsp[(1) - (2)].tree), (yyvsp[(1) - (2)].tree)->child[0], (yyvsp[(1) - (2)].tree)->child[1], (yyvsp[(2) - (2)].tree));}
     break;
 
   case 36:
-#line 66 "syn.y"
+#line 70 "syn.y"
     {skipnl();}
     break;
 
   case 37:
-#line 67 "syn.y"
+#line 71 "syn.y"
     {(yyval.tree)=tree2(SWITCH, (yyvsp[(2) - (4)].tree), (yyvsp[(4) - (4)].tree));}
     break;
 
   case 38:
-#line 68 "syn.y"
+#line 72 "syn.y"
     {(yyval.tree)=mung2((yyvsp[(1) - (3)].tree), (yyvsp[(2) - (3)].tree), (yyvsp[(3) - (3)].tree));}
     break;
 
   case 39:
-#line 69 "syn.y"
+#line 73 "syn.y"
     {(yyval.tree)=tree2(FN, (yyvsp[(2) - (3)].tree), (yyvsp[(3) - (3)].tree));}
     break;
 
   case 40:
-#line 70 "syn.y"
+#line 74 "syn.y"
     {(yyval.tree)=tree1(FN, (yyvsp[(2) - (2)].tree));}
     break;
 
   case 41:
-#line 71 "syn.y"
+#line 75 "syn.y"
     {(yyval.tree)=epimung((yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree), 1);}
     break;
 
   case 44:
-#line 74 "syn.y"
+#line 78 "syn.y"
     {(yyval.tree)=tree2(ARGLIST, (yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree));}
     break;
 
   case 45:
-#line 75 "syn.y"
+#line 79 "syn.y"
     {(yyval.tree)=tree2(ARGLIST, (yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree));}
     break;
 
   case 46:
-#line 76 "syn.y"
+#line 80 "syn.y"
     {(yyval.tree)=tree2(ARGLIST, (yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree));}
     break;
 
   case 47:
-#line 77 "syn.y"
+#line 81 "syn.y"
     {(yyval.tree)=tree2(ARGLIST, (yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree));}
     break;
 
   case 48:
-#line 78 "syn.y"
+#line 82 "syn.y"
     {(yyval.tree)=tree2('=', (yyvsp[(1) - (3)].tree), (yyvsp[(3) - (3)].tree));}
     break;
 
   case 52:
-#line 85 "syn.y"
+#line 89 "syn.y"
     {lastword=1; (yyval.tree)=token("=", WORD);}
     break;
 
   case 54:
-#line 88 "syn.y"
+#line 92 "syn.y"
     {(yyval.tree)=tree2('^', (yyvsp[(1) - (3)].tree), (yyvsp[(3) - (3)].tree));}
     break;
 
   case 55:
-#line 89 "syn.y"
+#line 93 "syn.y"
     {(yyval.tree)=(struct tree*)0;}
     break;
 
   case 56:
-#line 90 "syn.y"
+#line 94 "syn.y"
     {(yyval.tree)=tree2(WORDS, (yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree));}
     break;
 
   case 58:
-#line 93 "syn.y"
+#line 97 "syn.y"
     {lastword=1; (yyvsp[(1) - (1)].tree)->type=WORD;}
     break;
 
   case 59:
-#line 94 "syn.y"
+#line 98 "syn.y"
     {(yyval.tree)=tree1(PAREN, (yyvsp[(2) - (3)].tree));}
     break;
 
   case 61:
-#line 97 "syn.y"
+#line 101 "syn.y"
     {(yyval.tree)=tree2('^', (yyvsp[(1) - (3)].tree), (yyvsp[(3) - (3)].tree));}
     break;
 
   case 62:
-#line 99 "syn.y"
+#line 103 "syn.y"
     {(yyval.tree)=tree1('$', (yyvsp[(2) - (2)].tree));}
     break;
 
   case 63:
-#line 100 "syn.y"
+#line 104 "syn.y"
     {(yyval.tree)=tree2(SUB, (yyvsp[(2) - (5)].tree), (yyvsp[(4) - (5)].tree));}
     break;
 
   case 64:
-#line 101 "syn.y"
+#line 105 "syn.y"
     {(yyval.tree)=tree1('"', (yyvsp[(2) - (2)].tree));}
     break;
 
   case 65:
-#line 102 "syn.y"
+#line 106 "syn.y"
     {(yyval.tree)=tree1(COUNT, (yyvsp[(2) - (2)].tree));}
     break;
 
   case 66:
-#line 103 "syn.y"
+#line 107 "syn.y"
     {(yyval.tree)=tree1('`', (yyvsp[(2) - (2)].tree));}
     break;
 
   case 67:
-#line 104 "syn.y"
+#line 108 "syn.y"
     {(yyval.tree)=mung1((yyvsp[(1) - (2)].tree), (yyvsp[(2) - (2)].tree)); (yyval.tree)->type=PIPEFD;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1805 "y.tab.c"
+#line 1810 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

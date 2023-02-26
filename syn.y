@@ -23,15 +23,19 @@
 %type<tree> WORD REDIR DUP PIPE
 %%
 rc:				{ return 1;}
-|	line '\n'		{return !compile($1);}
+|	line '\n'		{return !compile(reassoc($1));}
 line:	cmdexpr
 |	line ';' cmdexpr	{$$=tree2(';', $1, $3);}
-|	line '&' cmdexpr	{$$=tree2(';', tree1('&', $1), $3);}
+	/* We have to apply this '&' to the right-most child of a
+	 * compound expression (';').  If 'line' is not ';'
+	 * there are some special cases (including { & } which we ignore).
+	 */
+|	line '&' cmdexpr	{$$=!(struct tree *)$1?$3:($1->type!=';'?tree2(';', tree1('&', $1), $3):tree2(';', mung2($1,$1->child[1],tree1('&',$1->child[2])), $3) );}
 |				{$$=(struct tree *)0;}
-body:	line
-|	body '\n' line		{$$=tree2(';', $1, $3);}
-brace:	'{' body '}'		{$$=tree1(BRACE, $2);}
-paren:	'(' body ')'		{$$=tree1(PCMD, $2);}
+body:	line			{$$=reassoc($1);}
+|	body '\n' line		{$$=tree2(';', $1, reassoc($3));}
+brace:	'{' body '}'		{$$=tree1(BRACE, reassoc($2));}
+paren:	'(' body ')'		{$$=tree1(PCMD, reassoc($2));}
 epilog:				{$$=0;}
 |	redir epilog		{$$=mung2($1, $1->child[0], $2);}
 redir:	REDIR word		{$$=mung1($1, $1->rtype==HERE?heredoc($2):$2);}
