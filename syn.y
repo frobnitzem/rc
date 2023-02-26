@@ -105,7 +105,7 @@ kword_t:first
 |	'(' wordsnl ')'		{$$=tree1(PAREN, $2);}
 	/* kword = kword_t strung together by carats */
 kword:	kword_t
-|	kword '^' kword_t	{$$=tree2('^', $1, $3);}
+|	kword '^' word_t	{$$=tree2('^', $1, $3);}
 	/* words that get interpreted */
 comword: '$' kword		{$$=tree1('$', $2);}
 |	'$' kword SUB wordsnl ')'	{$$=tree2(SUB, $2, $4);}
