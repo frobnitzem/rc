@@ -50,7 +50,7 @@ tree *newtree(void);
 tree *token(char*, int), *klook(char*), *tree1(int, tree*);
 tree *tree2(int, tree*, tree*), *tree3(int, tree*, tree*, tree*);
 tree *mung1(tree*, tree*), *mung2(tree*, tree*, tree*);
-tree *mung3(tree*, tree*, tree*, tree*), *epimung(tree*, tree*);
+tree *mung3(tree*, tree*, tree*, tree*), *epimung(tree*, tree*, int n);
 tree *simplemung(tree*), *heredoc(tree*);
 void freetree(tree*);
 extern tree *cmdtree;

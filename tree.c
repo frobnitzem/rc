@@ -88,13 +88,13 @@ mung3(tree *t, tree *c0, tree *c1, tree *c2)
 }
 
 tree*
-epimung(tree *comp, tree *epi)
+epimung(tree *comp, tree *epi, int n)
 {
 	tree *p;
 	if(epi==0)
 		return comp;
-	for(p = epi;p->child[1];p = p->child[1]);
-	p->child[1] = comp;
+	for(p = epi;p->child[n];p = p->child[n]);
+	p->child[n] = comp;
 	return epi;
 }
 /*

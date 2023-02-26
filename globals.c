@@ -5,7 +5,7 @@ int mypid;
 
 /* globals associated with lex.c and subr.c */
 int doprompt = 1;	/* is it time for a prompt? */
-int lastdol;	/* was the last token read '$' or '$#' or '"'? */
+int lastdol;	/* was the last token read '$' or '$#' or '"' or '='? */
 int lastword;	/* was the last token read a word or compound word terminator? */
 char tok[NTOK];
 int ndot = 0; // FIXME - never decreases?

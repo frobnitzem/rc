@@ -185,6 +185,7 @@ yylex(void)
 			strcpy(tok, "( [SUB]");
 			return SUB;
 		}
+		//if(wordchr(d) || d == '=' || d=='\'' || d=='`' || d=='$' || d=='"'){
 		if(wordchr(d) || d=='\'' || d=='`' || d=='$' || d=='"'){
 			strcpy(tok, "^");
 			return '^';
@@ -336,7 +337,7 @@ yylex(void)
 		return t->type;
 	}
 	if(!wordchr(c)){
-		lastdol = 0;
+		lastdol = 0; //c == '=';
 		tok[0] = c;
 		tok[1]='\0';
 		return c;
