@@ -54,15 +54,15 @@
      DUP = 270,
      PIPE = 271,
      SUB = 272,
-     SIMPLE = 273,
-     ARGLIST = 274,
-     WORDS = 275,
-     BRACE = 276,
-     PAREN = 277,
-     PCMD = 278,
-     PIPEFD = 279,
-     OROR = 280,
-     ANDAND = 281,
+     ANDAND = 273,
+     OROR = 274,
+     SIMPLE = 275,
+     ARGLIST = 276,
+     WORDS = 277,
+     BRACE = 278,
+     PAREN = 279,
+     PCMD = 280,
+     PIPEFD = 281,
      COUNT = 282
    };
 #endif
@@ -82,15 +82,15 @@
 #define DUP 270
 #define PIPE 271
 #define SUB 272
-#define SIMPLE 273
-#define ARGLIST 274
-#define WORDS 275
-#define BRACE 276
-#define PAREN 277
-#define PCMD 278
-#define PIPEFD 279
-#define OROR 280
-#define ANDAND 281
+#define ANDAND 273
+#define OROR 274
+#define SIMPLE 275
+#define ARGLIST 276
+#define WORDS 277
+#define BRACE 278
+#define PAREN 279
+#define PCMD 280
+#define PIPEFD 281
 #define COUNT 282
 
 

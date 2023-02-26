@@ -1,5 +1,5 @@
 %term FOR IN WHILE IF NOT TWIDDLE BANG SUBSHELL SWITCH FN
-%term WORD REDIR DUP PIPE SUB
+%term WORD REDIR DUP PIPE SUB ANDAND OROR
 %term SIMPLE ARGLIST WORDS BRACE PAREN PCMD PIPEFD /* not used in syntax */
 /* operator priorities -- lowest first */
 %left IF WHILE FOR SWITCH ')' NOT
@@ -16,7 +16,7 @@
 %union{
 	struct tree *tree;
 };
-%type<tree> line paren brace body assign epilog redir
+%type<tree> line paren parnl brace body assign epilog redir
 %type<tree> cmd cmdexpr simple compound
 %type<tree> first kword kword_t word_t comword keyword word words
 %type<tree> NOT FOR IN WHILE IF TWIDDLE BANG SUBSHELL SWITCH FN
@@ -40,14 +40,17 @@ epilog:				{$$=0;}
 |	redir epilog		{$$=mung2($1, $1->child[0], $2);}
 redir:	REDIR word		{$$=mung1($1, $1->rtype==HERE?heredoc($2):$2);}
 |	DUP
+parnl:	paren {skipnl();}	{$$=$1;}
 cmdexpr: cmd
 |	cmdexpr ANDAND cmd	{$$=tree2(ANDAND, $1, $3);}
 |	cmdexpr OROR cmd	{$$=tree2(OROR, $1, $3);}
 |	cmdexpr PIPE cmd	{$$=mung2($2, $1, $3);}
 cmd:    simple			{$$=simplemung($1);}
-|	IF paren {skipnl();} cmdexpr
-				{$$=mung2($1, $2, $4);}
-|	IF NOT {skipnl();} cmdexpr	{$$=mung1($2, $4);}
+|	IF parnl cmdexpr	{$$=mung2($1, $2, $3);}
+|	IF NOT {skipnl();} cmdexpr
+				{$$=mung1($2, $4);}
+|	IF parnl brace IF NOT {skipnl();} cmdexpr
+				{$$=tree2(';',mung2($1, $2, $3),mung1($5, $7));}
 |	FOR '(' word IN words ')' {skipnl();} cmdexpr
 	/*
 	 * if ``words'' is nil, we need a tree element to distinguish between 
@@ -60,14 +63,14 @@ cmd:    simple			{$$=simplemung($1);}
 				{$$=mung3($1, $3, $5 ? $5 : tree1(PAREN, $5), $8);}
 |	FOR '(' word ')' {skipnl();} cmdexpr
 				{$$=mung3($1, $3, (struct tree *)0, $6);}
-|	WHILE paren {skipnl();} cmdexpr
-				{$$=mung2($1, $2, $4);}
+|	WHILE parnl cmdexpr
+				{$$=mung2($1, $2, $3);}
 |	BANG cmdexpr		{$$=mung1($1, $2);}
 |	SUBSHELL cmdexpr	{$$=mung1($1, $2);}
 |	redir cmd  		{$$=mung2($1, $1->child[0], $2);}
 |       assign     		{$$=mung3($1, $1->child[0], $1->child[1], (struct tree *)0);}
 |       assign cmd 		{$$=mung3($1, $1->child[0], $1->child[1], $2);}
-|	SWITCH word {skipnl();} brace
+|	SWITCH kword {skipnl();} brace
  				{$$=tree2(SWITCH, $2, $4);}
 |	TWIDDLE word words	{$$=mung2($1, $2, $3);}
 |	FN words brace		{$$=tree2(FN, $2, $3);}
