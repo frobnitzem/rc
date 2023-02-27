@@ -564,6 +564,20 @@ conclist(word *lp, word *rp, word *tail)
 	return v;
 }
 
+word*
+conc1(word *rp, word *tail)
+{
+	char *buf;
+	word *v;
+	if(rp->next)
+		tail = conc1(rp->next, tail);
+	buf = emalloc(strlen(rp->word)+1);
+	strcpy(buf, rp->word);
+	v = newword(buf, tail);
+	efree(buf);
+	return v;
+}
+
 void
 Xconc(void)
 {
@@ -572,15 +586,16 @@ Xconc(void)
 	word *vp = runq->argv->next->next->words;
 	int lc = count(lp), rc = count(rp);
 	if(lc!=0 || rc!=0){
-		if(lc==0 || rc==0){
-			Xerror1("null list in concatenation");
-			return;
-		}
-		if(lc!=1 && rc!=1 && lc!=rc){
+		if(lc==0){
+			vp = conc1(rp, vp);
+		} else if(rc==0){
+			vp = conc1(lp, vp);
+		} else if(lc!=1 && rc!=1 && lc!=rc){
 			Xerror1("mismatched list lengths in concatenation");
 			return;
+		} else {
+			vp = conclist(lp, rp, vp);
 		}
-		vp = conclist(lp, rp, vp);
 	}
 	poplist();
 	poplist();
@@ -636,8 +651,17 @@ Xdol(void)
 	n = 0;
 	for(t = s;'0'<=*t && *t<='9';t++) n = n*10+*t-'0';
 	a = runq->argv->next->words;
-	if(n==0 || *t)
-		a = copywords(vlook(s)->val, a);
+	if(n==0 || *t) {
+		word *val = vlook(s)->val;
+		/* This modification will substitute empty strings for
+		 * undefined variables.
+		 * But it should be done for $*(n), Xqdol and
+		 * anywhere else vlook is called.
+		  if(val == 0)
+			  a = newword("", (word *)0);
+		 */
+		a = copywords(val, a);
+	}
 	else{
 		star = vlook("*")->val;
 		if(star && 1<=n && n<=count(star)){
