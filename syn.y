@@ -17,10 +17,10 @@
 	struct tree *tree;
 };
 %type<tree> line paren parnl brace body assign epilog redir
-%type<tree> cmd cmdexpr simple compound
-%type<tree> first kword kword_t word_t comword keyword word words wordsnl
+%type<tree> cmd cmdexpr simple compound first first_t
+%type<tree> kword kword_t word_t comword keyword word words wordsnl
 %type<tree> NOT FOR IN WHILE IF TWIDDLE BANG SUBSHELL SWITCH FN
-%type<tree> WORD REDIR DUP PIPE
+%type<tree> WORD REDIR PIPEFD DUP PIPE
 %%
 rc:				{ return 1;}
 |	line '\n'		{return !compile(reassoc($1));}
@@ -78,16 +78,16 @@ cmd:    simple			{$$=simplemung($1);}
 |	brace epilog		{$$=epimung($1, $2, 1);}
 simple:	first
 |	compound
-|	first redir		{$$=tree2(ARGLIST, $1, $2);}
+|       simple redir		{$$=tree2(ARGLIST, $1, $2);}
 compound: first kword		{$$=tree2(ARGLIST, $1, $2);}
 |         compound word         {$$=tree2(ARGLIST, $1, $2);}
-|	  compound redir	{$$=tree2(ARGLIST, $1, $2);}
 assign:	first '=' kword		{$$=tree2('=', $1, $3);}
 |	first '^' '=' kword	{$$=tree2('=', $1, $4);}
 	/* first words are the most restricted word class */
-first:	comword
+first_t:comword
 |  	WORD
-	/*comword |	first '^' kword		{$$=tree2('^', $1, $3);}*/
+first:	first_t
+|	first '^' first_t	{$$=tree2('^', $1, $3);}
 	/* word_t can be any keyword and '=' signs */
 word_t:	kword_t
 | 	'='			{lastword=1; $$=token("=", WORD);}
@@ -100,7 +100,7 @@ wordsnl:			{$$=(struct tree*)0;}
 words:				{$$=(struct tree*)0;}
 |	words word		{$$=tree2(WORDS, $1, $2);}
 	/* kword_t can be any first word, keyword, or list of words */
-kword_t:first
+kword_t:first_t
 |       keyword			{lastword=1; $1->type=WORD;}
 |	'(' wordsnl ')'		{$$=tree1(PAREN, $2);}
 	/* kword = kword_t strung together by carats */
@@ -112,5 +112,5 @@ comword: '$' kword		{$$=tree1('$', $2);}
 |	'"' kword		{$$=tree1('"', $2);}
 |	COUNT kword		{$$=tree1(COUNT, $2);}
 |	'`' brace		{$$=tree1('`', $2);}
-|	REDIR brace		{$$=mung1($1, $2); $$->type=PIPEFD;}
+|	PIPEFD body '}'		{$$=mung1($1, tree1(BRACE, reassoc($2)));}
 keyword: FOR|IN|WHILE|IF|NOT|TWIDDLE|BANG|SUBSHELL|SWITCH|FN

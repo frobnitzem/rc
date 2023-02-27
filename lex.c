@@ -265,6 +265,10 @@ yylex(void)
 			t->fd0 = 0;
 			break;
 		}
+        /* Distinguish PIPEFD from REDIR to help the parser */
+        if(t->type == REDIR && nextis('{')) {
+            t->type = PIPEFD;
+        }
 		if(nextis('[')){
 			*w++='[';
 			c = advance();
