@@ -30,7 +30,7 @@ line:	cmdexpr
 	 * compound expression (';').  If 'line' is not ';'
 	 * there are some special cases (including { & } which we ignore).
 	 */
-|	line '&' cmdexpr	{$$=!(struct tree *)$1?$3:($1->type!=';'?tree2(';', tree1('&', $1), $3):tree2(';', mung2($1,$1->child[1],tree1('&',$1->child[2])), $3) );}
+|	line '&' cmdexpr	{$$=!(struct tree *)$1?$3:($1->type!=';'?tree2(';', tree1('&', $1), $3):tree2(';', mung2($1,$1->child[0],tree1('&',$1->child[1])), $3) );}
 body:	line			{$$=reassoc($1);}
 |	body '\n' line		{$$=tree2(';', $1, reassoc($3));}
 brace:	'{' body '}'		{$$=tree1(BRACE, reassoc($2));}

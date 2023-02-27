@@ -132,7 +132,7 @@
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 
 /* Enabling verbose error messages.  */
@@ -1552,7 +1552,7 @@ yyreduce:
 
   case 6:
 #line 33 "syn.y"
-    {(yyval.tree)=!(struct tree *)(yyvsp[(1) - (3)].tree)?(yyvsp[(3) - (3)].tree):((yyvsp[(1) - (3)].tree)->type!=';'?tree2(';', tree1('&', (yyvsp[(1) - (3)].tree)), (yyvsp[(3) - (3)].tree)):tree2(';', mung2((yyvsp[(1) - (3)].tree),(yyvsp[(1) - (3)].tree)->child[1],tree1('&',(yyvsp[(1) - (3)].tree)->child[2])), (yyvsp[(3) - (3)].tree)) );}
+    {(yyval.tree)=!(struct tree *)(yyvsp[(1) - (3)].tree)?(yyvsp[(3) - (3)].tree):((yyvsp[(1) - (3)].tree)->type!=';'?tree2(';', tree1('&', (yyvsp[(1) - (3)].tree)), (yyvsp[(3) - (3)].tree)):tree2(';', mung2((yyvsp[(1) - (3)].tree),(yyvsp[(1) - (3)].tree)->child[0],tree1('&',(yyvsp[(1) - (3)].tree)->child[1])), (yyvsp[(3) - (3)].tree)) );}
     break;
 
   case 7:
